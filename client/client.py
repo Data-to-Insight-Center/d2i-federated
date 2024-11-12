@@ -12,7 +12,7 @@ from sklearn.pipeline import Pipeline
 
 def preprocess_data():
 
-    df = pd.read_csv("../data/titanic/train.csv")  # Ensure the path is correct
+    df = pd.read_csv("../data/titanic/train.csv")
 
     X = df[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']]
     y = df['Survived']
@@ -51,7 +51,7 @@ class TitanicModel(nn.Module):
         super(TitanicModel, self).__init__()
         self.fc1 = nn.Linear(X_train.shape[1], 128)
         self.fc2 = nn.Linear(128, 64)
-        self.fc3 = nn.Linear(64, 1)  # Binary classification
+        self.fc3 = nn.Linear(64, 1)
 
     def forward(self, x):
         x = torch.relu(self.fc1(x))
@@ -73,7 +73,6 @@ class Client(fl.client.NumPyClient):
         return [param.cpu().detach().numpy() for param in self.model.parameters()]
 
     def set_parameters(self, parameters):
-        # Update model parameters
         for param, new_param in zip(self.model.parameters(), parameters):
             param.data = torch.tensor(new_param, dtype=param.dtype)
 
@@ -83,15 +82,15 @@ class Client(fl.client.NumPyClient):
         X_tensor = torch.FloatTensor(self.X_train)
         y_tensor = torch.FloatTensor(self.y_train).view(-1, 1)
 
-        for epoch in range(5):  # Number of epochs
+        for epoch in range(5):
             self.optimizer.zero_grad()
             output = self.model(X_tensor)
             loss = nn.BCELoss()(output, y_tensor)
             loss.backward()
             self.optimizer.step()
 
-        accuracy = ((output.round() == y_tensor).float().mean()).item()  # Calculate accuracy
-        return self.get_parameters(), len(self.X_train), {"loss": loss.item(), "accuracy": accuracy}  # Return metrics
+        accuracy = ((output.round() == y_tensor).float().mean()).item()
+        return self.get_parameters(), len(self.X_train), {"loss": loss.item(), "accuracy": accuracy}
 
     def evaluate(self, parameters, config):
         self.set_parameters(parameters)
@@ -106,7 +105,6 @@ class Client(fl.client.NumPyClient):
 
 
 if __name__ == "__main__":
-    # Preprocess the data
     X_train, y_train, X_test, y_test = preprocess_data()
 
     model = TitanicModel()
