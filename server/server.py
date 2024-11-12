@@ -44,7 +44,6 @@ class Server(fl.server.Server):
         return float(val_loss), len(val_data), {"accuracy": accuracy}
 
 
-# Aggregation functions for metrics
 def fit_metrics_aggregation_fn(metrics: List[Tuple[int, Dict[str, float]]]) -> Dict[str, float]:
     """Aggregate fit metrics from clients."""
     aggregated_metrics = {}
@@ -75,15 +74,14 @@ def evaluate_metrics_aggregation_fn(metrics: List[Tuple[int, Dict[str, float]]])
 strategy = fl.server.strategy.FedAvg(
     min_fit_clients=2,  # Minimum number of clients to train on each round
     min_available_clients=2,  # Minimum number of clients to be connected
-    on_fit_config_fn=lambda rnd: {"epoch": rnd},  # Send round number as config
+    on_fit_config_fn=lambda rnd: {"epoch": rnd},
     fit_metrics_aggregation_fn=fit_metrics_aggregation_fn,
     evaluate_metrics_aggregation_fn=evaluate_metrics_aggregation_fn,
 )
 
-# Start Flower server
 if __name__ == "__main__":
     fl.server.start_server(
-        server_address="0.0.0.0:8080",  # Listening on all interfaces
-        config=fl.server.ServerConfig(num_rounds=1),  # Number of rounds to run
+        server_address="0.0.0.0:8080",
+        config=fl.server.ServerConfig(num_rounds=1),
         strategy=strategy,
     )
