@@ -1,8 +1,6 @@
-# Dockerfile_client
-FROM python:3.8-slim
+FROM python:3.9-slim
 
 RUN pip install --no-cache-dir torch torchvision flwr flask requests scikit-learn pandas numpy
-
 
 WORKDIR /app
 

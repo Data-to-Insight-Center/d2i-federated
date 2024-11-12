@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  flower-client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flower-client
+    environment:
+      - TRAIN_DATA_FILE=/app/train.csv
+      - SERVER_URL=flower-server:8080
+    networks:
+      - flower-network
+
+networks:
+  flower-network:
+    external: true

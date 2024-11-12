@@ -1,11 +1,11 @@
-# dockerfile_server
-FROM python:3.8-slim
+FROM python:3.9-slim
 
 RUN pip install --no-cache-dir torch torchvision flwr flask requests scikit-learn pandas numpy
+
+EXPOSE 8080
 
 WORKDIR /app
 
 COPY server.py /app/server.py
-COPY train.csv /app/train.csv
 
 CMD ["python", "server.py"]

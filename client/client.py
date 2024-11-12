@@ -1,3 +1,5 @@
+import time
+
 import flwr as fl
 import numpy as np
 import pandas as pd
@@ -8,11 +10,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+import os
 
+TRAIN_DATA_FILE = os.getenv('TRAIN_DATA_FILE', '/app/train.csv')
+SERVER_URL = os.getenv('SERVER_URL', "127.0.0.1:8080")
 
 def preprocess_data():
 
-    df = pd.read_csv("../data/titanic/train.csv")
+    df = pd.read_csv(TRAIN_DATA_FILE)
 
     X = df[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']]
     y = df['Survived']
@@ -108,5 +113,5 @@ if __name__ == "__main__":
     X_train, y_train, X_test, y_test = preprocess_data()
 
     model = TitanicModel()
-    fl.client.start_numpy_client(server_address="127.0.0.1:8080",
+    fl.client.start_numpy_client(server_address=SERVER_URL,
                                  client=Client(model, X_train, y_train, X_test, y_test))
